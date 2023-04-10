@@ -5,10 +5,13 @@
 using namespace std;
 
 class graph{
+private:
     vector<unordered_set<int>> adjacency_list;
     int n;
     int m;
 
+
+public:
     friend istream& operator>>(istream& o, graph& cur)
     {
         o >> cur.n >> cur.m;
@@ -44,7 +47,7 @@ class graph{
     bool achievable(int from, int to){
         static vector<int> visited(n);
 
-        if (v == to){
+        if (to == from){
             return true;
         }
 
