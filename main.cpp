@@ -39,6 +39,28 @@ class graph{
         }
         return o;
     }
+
+
+    bool achievable(int from, int to){
+        static vector<int> visited(n);
+
+        if (v == to){
+            return true;
+        }
+
+        if (visited[from]){
+            return false;
+        }
+
+        visited[from] = true;
+
+        bool res = 0;
+        for (auto v: adjacency_list[from]){
+            res = res || achievable(v, to);
+        }
+
+        return res;
+    }
 };
 
 int main(){
