@@ -15,7 +15,6 @@ class graph{
             o >> u; u--;
             o >> v; v--;
             cur.adjacency_list[u].push_back(v);
-            cur.adjacency_list[v].push_back(u);
         }
         return o;
     }
