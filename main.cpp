@@ -15,11 +15,11 @@ public:
     graph(){
     }
 
-    graph(int n){
+    graph(const int n){
         this->n = n;
     }
 
-    void add_edge(int u, int v){
+    void add_edge(const int u, const int v){
         adjacency_list[u].insert(v);
     }
 
@@ -55,7 +55,7 @@ public:
     }
 
 
-    bool achievable(int from, int to){
+    bool achievable(const int from, const int to){
         static vector<int> visited(n);
 
         if (to == from){
@@ -76,7 +76,7 @@ public:
         return res;
     }
 
-    graph subgraph(vector<int> vertexes){
+    graph subgraph(const vector<int>& vertexes){
         graph subgraph(n);
         for (auto u: vertexes){
             for (auto v: vertexes){
