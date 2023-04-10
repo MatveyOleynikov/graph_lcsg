@@ -19,6 +19,24 @@ class graph{
         }
         return o;
     }
+
+    friend ostream& operator<<(ostream& o, const graph& cur)
+    {
+        o << "Vertexes: " << cur.n << "\n";
+        o << "Edges: " << cur.m << "\n";
+
+        for (long long u = 0; u < cur.n; ++u){
+            o << u << ":";
+            o << '(';
+            for (auto v: cur.adjacency_list[u]){
+                o << v;
+                o << ',';
+            }
+            o << ')';
+            o << '\n';
+        }
+        return o;
+    }
 };
 
 int main(){
