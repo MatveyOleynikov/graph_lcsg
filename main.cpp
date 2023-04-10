@@ -10,8 +10,15 @@ private:
     int n;
     int m;
 
-    static vector<vector<int>> combinations(const int n){
-        return {{}};
+    static void combinations(const int n, vector<vector<int>>& combinations, int cur = 0, vector<int> currentCombination = {}){
+        if (cur == n){
+            combinations.push_back(currentCombination);
+        }
+
+        combinations(n, combinations, cur + 1, currentCombination);
+
+        currentCombination.push_back(cur);
+
     }
 
 public:
@@ -115,7 +122,10 @@ public:
     static vector<int> bruteForceGreatestCommonSubgraph(const graph& firstGraph, const graph& secondGraph){
         vector<int> res;
 
-        vector<vector<int>> allCombinations = combinations(min(firstGraph.get_n(), secondGraph.get_n()));
+        vector<vector<int>> allCombinations;
+
+        combinations(min(firstGraph.get_n(), secondGraph.get_n()), allCombinations);
+
         return res;
     }
 };
