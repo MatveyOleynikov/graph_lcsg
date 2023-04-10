@@ -12,6 +12,17 @@ private:
 
 
 public:
+    graph(){
+    }
+
+    graph(int n){
+        this->n = n;
+    }
+
+    void add_edge(int u, int v){
+        adjacency_list[u].insert(v);
+    }
+
     friend istream& operator>>(istream& o, graph& cur)
     {
         o >> cur.n >> cur.m;
@@ -63,6 +74,19 @@ public:
         }
 
         return res;
+    }
+
+    graph subgraph(vector<int> vertexes){
+        graph subgraph(n);
+        for (auto u: vertexes){
+            for (auto v: vertexes){
+                if (achievable(u, v)){
+                    subgraph.add_edge(u, v);
+                }
+            }
+        }
+
+        return subgraph;
     }
 };
 
