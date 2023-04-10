@@ -23,8 +23,11 @@ public:
         adjacency_list[u].insert(v);
     }
 
-    friend istream& operator>>(istream& o, graph& cur)
-    {
+    unordered_set<int> adjacents(const int u) const{
+        return adjacency_list[u];
+    }
+
+    friend istream& operator>>(istream& o, graph& cur){
         o >> cur.n >> cur.m;
         cur.adjacency_list.resize(cur.n);
         for (long long i = 0; i < cur.m; ++i){
@@ -36,8 +39,7 @@ public:
         return o;
     }
 
-    friend ostream& operator<<(ostream& o, const graph& cur)
-    {
+    friend ostream& operator<<(ostream& o, const graph& cur){
         o << "Vertexes: " << cur.n << "\n";
         o << "Edges: " << cur.m << "\n";
 
@@ -55,7 +57,7 @@ public:
     }
 
 
-    bool achievable(const int from, const int to){
+    bool achievable(const int from, const int to) const{
         static vector<int> visited(n);
 
         if (to == from){
@@ -76,7 +78,7 @@ public:
         return res;
     }
 
-    graph subgraph(const vector<int>& vertexes){
+    graph subgraph(const vector<int>& vertexes) const{
         graph subgraph(n);
         for (auto u: vertexes){
             for (auto v: vertexes){
@@ -87,6 +89,23 @@ public:
         }
 
         return subgraph;
+    }
+
+    static bool equalSubgraphs(const graph& firstGraph, const graph& secondGraph, vector<int>& vertexes){
+        graph firstSubgraph = firstGraph.subgraph(vertexes);
+        graph secondSubgraph = secondGraph.subgraph(vertexes);
+
+        for (auto u: vertexes){
+            if (firstGraph.adjacents(u) != secondGraph.adjacents(u)){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    static vector<int> bruteForceGreatestCommonSubgraph(const graph& firstGraph, const graph& secondGraph){
+        return {};
     }
 };
 
