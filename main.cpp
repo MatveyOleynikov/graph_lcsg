@@ -11,10 +11,12 @@ class graph{
 
     friend istream& operator>>(istream& o, graph& cur)
     {
+        o >> cur.n >> cur.m;
+        cur.adjacency_list.resize(cur.n);
         for (long long i = 0; i < cur.m; ++i){
             long long u, v;
-            o >> u; u--;
-            o >> v; v--;
+            o >> u;
+            o >> v;
             cur.adjacency_list[u].insert(v);
         }
         return o;
@@ -40,6 +42,11 @@ class graph{
 };
 
 int main(){
+    graph firstGraph;
+    cin >> firstGraph;
+    graph secondGraph;
+    cin >> secondGraph;
 
+    cout << firstGraph << "\n" << secondGraph << "\n";
     return 0;
 }
