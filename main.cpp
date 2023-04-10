@@ -10,8 +10,15 @@ private:
     int n;
     int m;
 
+    static vector<vector<int>> combinations(const int n){
+        return {{}};
+    }
 
 public:
+    int get_n() const{
+        return n;
+    }
+
     graph(){
     }
 
@@ -20,6 +27,7 @@ public:
     }
 
     void add_edge(const int u, const int v){
+        m++;
         adjacency_list[u].insert(v);
     }
 
@@ -105,7 +113,10 @@ public:
     }
 
     static vector<int> bruteForceGreatestCommonSubgraph(const graph& firstGraph, const graph& secondGraph){
-        return {};
+        vector<int> res;
+
+        vector<vector<int>> allCombinations = combinations(min(firstGraph.get_n(), secondGraph.get_n()));
+        return res;
     }
 };
 
