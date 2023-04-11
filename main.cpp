@@ -43,10 +43,8 @@ private:
     int m;
 
     static void combinations(const int n, vector<unordered_set<int>>& list_combinations, int cur = 0, unordered_set<int> currentCombination = {}){
-        dbg(cur, n);
 
         if (cur == n){
-            dbg(currentCombination);
             list_combinations.push_back(currentCombination);
             return;
         }
@@ -77,6 +75,11 @@ public:
     void add_edge(const int u, const int v){
         m++;
         adjacency_list[u].insert(v);
+    }
+
+    void remove_edge(const int u, const int v){
+        m++;
+        adjacency_list[u].erase(v);
     }
 
     const unordered_set<int>& adjacents(const int u) const{
@@ -136,14 +139,11 @@ public:
 
     graph subgraph(const unordered_set<int>& vertexes) const{
         graph subgraph = *this;
-        dbg(subgraph);
         for (int i = 0; i < n; ++i){
             if (!vertexes.count(i)){
                 const unordered_set<int>& cur_adjacents = adjacents(i);
-                dbg(cur_adjacents);
 
                 for (int u = 0; u < n; ++u){
-                    dbg(u);
                     if (adjacents(u).count(i)){
                         for (auto v: cur_adjacents){
                             subgraph.add_edge(u, v);
@@ -153,7 +153,15 @@ public:
             }
         }
 
-        dbg(subgraph);
+        for (int i = 0; i < n; ++i){
+            if (!vertexes.count(i)){
+                for (int u = 0; u < n; ++u){
+                    if (adjacents(u).count(i)){
+                        subgraph.remove_edge(u, i);
+                    }
+                }
+            }
+        }
 
         return subgraph;
     }
@@ -162,8 +170,10 @@ public:
         graph firstSubgraph = firstGraph.subgraph(vertexes);
         graph secondSubgraph = secondGraph.subgraph(vertexes);
 
+        unordered_set<int> un_st = {7, 1, 0, 2, 4, 5, 6};
+
         for (auto u: vertexes){
-            if (firstGraph.adjacents(u) != secondGraph.adjacents(u)){
+            if (firstSubgraph.adjacents(u) != secondSubgraph.adjacents(u)){
                 return false;
             }
         }
@@ -178,10 +188,7 @@ public:
 
         combinations(min(firstGraph.get_n(), secondGraph.get_n()), allCombinations);
 
-        dbg(allCombinations);
-
         for (auto& combination: allCombinations){
-            dbg(combination);
             if (equalSubgraphs(firstGraph, secondGraph, combination) && res.size() < combination.size()){
                 res = combination;
             }
@@ -199,14 +206,25 @@ int main(){
 
     cout << firstGraph << endl << secondGraph << endl;
 
-    cout << graph::bruteForceGreatestCommonSubgraph(firstGraph, secondGraph);
+    unordered_set<int> best_variant = {0, 1, 2, 4, 5, 6, 7};
     return 0;
 }
+
 /*
-3 2
+8 7
 1 2
 2 3
-3 2
+3 4
+4 5
+5 6
+6 7
+3 5
+8 7
 1 2
 2 3
+3 4
+4 5
+5 6
+6 7
+2 5
 */
