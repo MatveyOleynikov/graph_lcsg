@@ -10,15 +10,18 @@ private:
     int n;
     int m;
 
-    static void combinations(const int n, vector<vector<int>>& combinations, int cur = 0, vector<int> currentCombination = {}){
+    static void combinations(const int n, vector<unordered_set<int>>& list_combinations, int cur = 0, unordered_set<int> currentCombination = {}){
         if (cur == n){
-            combinations.push_back(currentCombination);
+            list_combinations.push_back(currentCombination);
         }
 
-        combinations(n, combinations, cur + 1, currentCombination);
+        combinations(n, list_combinations, cur + 1, currentCombination);
 
-        currentCombination.push_back(cur);
+        currentCombination.insert(cur);
 
+        combinations(n, list_combinations, cur + 1, currentCombination);
+
+        currentCombination.erase(cur);
     }
 
 public:
@@ -38,7 +41,7 @@ public:
         adjacency_list[u].insert(v);
     }
 
-    unordered_set<int> adjacents(const int u) const{
+    const unordered_set<int>& adjacents(const int u) const{
         return adjacency_list[u];
     }
 
@@ -93,12 +96,18 @@ public:
         return res;
     }
 
-    graph subgraph(const vector<int>& vertexes) const{
-        graph subgraph(n);
-        for (auto u: vertexes){
-            for (auto v: vertexes){
-                if (achievable(u, v)){
-                    subgraph.add_edge(u, v);
+    graph subgraph(const unordered_set<int>& vertexes) const{
+        graph subgraph = *this;
+        for (int i = 0; i < n; ++i){
+            if (!vertexes.count(i)){
+                const unordered_set<int>& cur_adjacents = adjacents(i);
+
+                for (int u = 0; u < n; ++i){
+                    if (adjacents(u).count(i)){
+                        for (auto v: cur_adjacents){
+                            subgraph.add_edge(u, v);
+                        }
+                    }
                 }
             }
         }
@@ -106,7 +115,7 @@ public:
         return subgraph;
     }
 
-    static bool equalSubgraphs(const graph& firstGraph, const graph& secondGraph, vector<int>& vertexes){
+    static bool equalSubgraphs(const graph& firstGraph, const graph& secondGraph, unordered_set<int>& vertexes){
         graph firstSubgraph = firstGraph.subgraph(vertexes);
         graph secondSubgraph = secondGraph.subgraph(vertexes);
 
@@ -119,12 +128,18 @@ public:
         return true;
     }
 
-    static vector<int> bruteForceGreatestCommonSubgraph(const graph& firstGraph, const graph& secondGraph){
-        vector<int> res;
+    static unordered_set<int> bruteForceGreatestCommonSubgraph(const graph& firstGraph, const graph& secondGraph){
+        unordered_set<int> res;
 
-        vector<vector<int>> allCombinations;
+        vector<unordered_set<int>> allCombinations;
 
         combinations(min(firstGraph.get_n(), secondGraph.get_n()), allCombinations);
+
+        for (auto& combination: allCombinations){
+            if (equalSubgraphs(firstGraph, secondGraph, combination)){
+                res = combination;
+            }
+        }
 
         return res;
     }
