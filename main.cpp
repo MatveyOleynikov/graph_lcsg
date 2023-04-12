@@ -196,6 +196,28 @@ public:
 
         return res;
     }
+
+    static unordered_set<int> cartesianProductGreatestCommonSubgraph(const graph& firstGraph, const graph& secondGraph){
+        int maxVertex = min(firstGraph.get_n(), secondGraph.get_n());
+
+        vector<vector<unordered_set<int>>> result(maxVertex, vector<unordered_set<int>>(maxVertex));
+
+        result[0][0] = {0};
+
+        for (int addedVertex = 0; addedVertex < maxVertex; ++addedVertex){
+            for (int predVertexFirstGraph = 0; predVertexFirstGraph < addedVertex; ++predVertexFirstGraph){
+                for (int predVertexSecondGraph = 0; predVertexSecondGraph < addedVertex; ++predVertexSecondGraph){
+                    unordered_set<int> current = result[predVertexFirstGraph][predVertexSecondGraph];
+                    current.insert(addedVertex);
+                    if (equalSubgraphs(firstGraph, secondGraph, current) && result[addedVertex][addedVertex].size() < current.size()){
+                        result[addedVertex][addedVertex] = current;
+                    }
+                }
+            }
+        }
+
+        return result[maxVertex - 1][maxVertex - 1];
+    }
 };
 
 int main(){
@@ -205,6 +227,9 @@ int main(){
     cin >> secondGraph;
 
     cout << firstGraph << endl << secondGraph << endl;
+
+    dbg(graph::bruteForceGreatestCommonSubgraph(firstGraph, secondGraph));
+    dbg(graph::cartesianProductGreatestCommonSubgraph(firstGraph, secondGraph));
 
     unordered_set<int> best_variant = {0, 1, 2, 4, 5, 6, 7};
     return 0;
