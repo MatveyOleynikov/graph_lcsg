@@ -37,10 +37,10 @@ ostream& operator<<(ostream& o, const pair<X, Y>& p)
     return o << "<" << p.first << ", " << p.second << ">" << "\n";
 }
 
-template<typename T>
-ostream& operator<<(ostream& o, const unordered_set<T> & st)
+template<typename X, typename Y>
+ostream& operator<<(ostream& o, const map<X, Y>& mp)
 {
-    for (auto elem: st){
+    for (auto elem: mp){
         o << elem << " ";
     }
     o << endl;
@@ -244,6 +244,7 @@ public:
 class GitLog{
 private:
     vector<string> gitLog;
+    string directoryName;
 
     void generateListOfEdgesFromGitLog(int str, int stb, const string& curHash, const vector<string>& gitLog, set<tuple<string, int, int>>& visited, vector<pair<string, string>>& listOfEdges) const{
         if (visited.count({curHash, str, stb})){
@@ -274,6 +275,7 @@ private:
 
 public:
     GitLog(const string& directoryName){
+        this->directoryName = directoryName;
         string queryLog = "cd " + directoryName + " && git log --graph > gitlog.txt";
 
         system(queryLog.c_str());
@@ -295,15 +297,47 @@ public:
 
         return listOfEdges;
     }
+
+    map<string, vector<string>> generateDiffForEveryHash() const{
+        vector<pair<string, string>> listOfEdges = generateListOfEdges();
+
+        set<string> hashes;
+
+        for (auto elem: listOfEdges){
+            hashes.insert(elem.first);
+            hashes.insert(elem.second);
+        }
+
+        map<string, vector<string>> res;
+
+        for (auto elem: hashes){
+            string queryLog = "cd " + directoryName + " && git diff " + elem + " > gitlog.txt";
+            system(queryLog.c_str());
+
+            vector<string> diff;
+
+            ifstream input(directoryName + "\\gitlog.txt");
+
+            string line;
+
+            while (getline(input, line)){
+                diff.push_back(line);
+            }
+
+            res[elem] = diff;
+        }
+
+        return res;
+    }
 };
 
 int main()
 {
     GitLog gitLog("C:\\Users\\ochob\\OneDrive\\Рабочий стол\\6 семестр\\mercurial\\lab6\\laba\\mylab6");
 
-    vector<pair<string, string>> listOfEdges = gitLog.generateListOfEdges();
+    auto diff = gitLog.generateDiffForEveryHash();
 
-    dbg(listOfEdges);
+    dbg(diff);
     return 0;
 }
 
