@@ -15,6 +15,27 @@ using namespace std;
 #else
 #define dbg(...)
 #endif
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#ifdef MATVEY
+#define _dbg(x) do { cout << #x << "=" << x << "; "; } while (0)
+#define _name(name, _1, _2, _3, _4, N, ...) name ## N
+#define _dbg1(x) _dbg(x)
+#define _dbg2(x, ...) _dbg(x); _dbg1(__VA_ARGS__)
+#define _dbg3(x, ...) _dbg(x); _dbg2(__VA_ARGS__)
+#define _dbg4(x, ...) _dbg(x); _dbg3(__VA_ARGS__)
+#define dbg(...) do { cout << __LINE__ << ": "; _name(_dbg, __VA_ARGS__, 4, 3, 2, 1, 0)(__VA_ARGS__); cout << endl;} while (0)
+#else
+#define dbg(...)
+#endif
+
+template<typename X, typename Y>
+ostream& operator<<(ostream& o, const pair<X, Y>& p)
+{
+    return o << "<" << p.first << ", " << p.second << ">" << "\n";
+}
 
 template<typename T>
 ostream& operator<<(ostream& o, const unordered_set<T> & st)
@@ -220,18 +241,69 @@ public:
     }
 };
 
-int main(){
-    graph firstGraph;
-    cin >> firstGraph;
-    graph secondGraph;
-    cin >> secondGraph;
+class GitLog{
+private:
+    vector<string> gitLog;
 
-    cout << firstGraph << endl << secondGraph << endl;
+    void generateListOfEdgesFromGitLog(int str, int stb, const string& curHash, const vector<string>& gitLog, set<tuple<string, int, int>>& visited, vector<pair<string, string>>& listOfEdges) const{
+        if (visited.count({curHash, str, stb})){
+            return;
+        }
 
-    dbg(graph::bruteForceGreatestCommonSubgraph(firstGraph, secondGraph));
-    dbg(graph::cartesianProductGreatestCommonSubgraph(firstGraph, secondGraph));
+        visited.insert({curHash, str, stb});
 
-    unordered_set<int> best_variant = {0, 1, 2, 4, 5, 6, 7};
+        if (gitLog[str][stb] == '*'){
+            string newHash = gitLog[str].substr(gitLog[str].find("commit") + 7);
+            if (curHash != ""){
+                listOfEdges.push_back({curHash, newHash});
+            }
+            generateListOfEdgesFromGitLog(str + 1, stb, newHash, gitLog, visited, listOfEdges);
+            return;
+        }
+
+        if (gitLog[str][stb] == '|'){
+            generateListOfEdgesFromGitLog(str + 1, stb, curHash, gitLog, visited, listOfEdges);
+        }
+        if (gitLog[str][stb + 1] == '\\'){
+            generateListOfEdgesFromGitLog(str + 1, stb + 2, curHash, gitLog, visited, listOfEdges);
+        }
+        if (stb >= 2 && gitLog[str][stb - 1] == '/'){
+            generateListOfEdgesFromGitLog(str + 1, stb - 2, curHash, gitLog, visited, listOfEdges);
+        }
+    }
+
+public:
+    GitLog(const string& directoryName){
+        string queryLog = "cd " + directoryName + " && git log --graph > gitlog.txt";
+
+        system(queryLog.c_str());
+
+        ifstream input(directoryName + "\\gitlog.txt");
+
+        string line;
+
+        while (getline(input, line)){
+            gitLog.push_back(line);
+        }
+    }
+
+    vector<pair<string, string>> generateListOfEdges() const{
+        set<tuple<string, int, int>> visited;
+        vector<pair<string, string>> listOfEdges;
+
+        generateListOfEdgesFromGitLog(0, 0, "", gitLog, visited, listOfEdges);
+
+        return listOfEdges;
+    }
+};
+
+int main()
+{
+    GitLog gitLog("C:\\Users\\ochob\\OneDrive\\Рабочий стол\\6 семестр\\mercurial\\lab6\\laba\\mylab6");
+
+    vector<pair<string, string>> listOfEdges = gitLog.generateListOfEdges();
+
+    dbg(listOfEdges);
     return 0;
 }
 
