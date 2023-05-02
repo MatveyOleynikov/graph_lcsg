@@ -57,6 +57,16 @@ ostream& operator<<(ostream& o, const vector<T> & st)
     return o;
 }
 
+template<typename T>
+ostream& operator<<(ostream& o, const unordered_set<T> & st)
+{
+    for (auto elem: st){
+        o << elem << " ";
+    }
+    o << endl;
+    return o;
+}
+
 class graph{
 private:
     vector<unordered_set<int>> adjacency_list;
@@ -93,13 +103,28 @@ public:
         this->n = n;
     }
 
+    graph(const vector<pair<int, int>>& listOfEdges){
+        int mx = 0;
+        for (auto pr: listOfEdges){
+            mx = max({mx, pr.second, pr.first});
+        }
+
+        n = mx + 1;
+
+        adjacency_list.resize(n);
+
+        for (auto pr: listOfEdges){
+            add_edge(pr.first, pr.second);
+        }
+    }
+
     void add_edge(const int u, const int v){
         m++;
         adjacency_list[u].insert(v);
     }
 
     void remove_edge(const int u, const int v){
-        m++;
+        m--;
         adjacency_list[u].erase(v);
     }
 
@@ -331,13 +356,83 @@ public:
     }
 };
 
-int main()
-{
+vector<pair<vector<string>, vector<string>>> createlistOfEdgesDiffFromLinkOnRep(const string& linkOnRep){
     GitLog gitLog("C:\\Users\\ochob\\OneDrive\\Рабочий стол\\6 семестр\\mercurial\\lab6\\laba\\mylab6");
 
-    auto diff = gitLog.generateDiffForEveryHash();
+    map<string, vector<string>> diff = gitLog.generateDiffForEveryHash();
 
-    dbg(diff);
+    vector<pair<string, string>> listOfEdges = gitLog.generateListOfEdges();
+
+    vector<pair<vector<string>, vector<string>>> listOfEdgesDiff;
+
+    for (int i = 0; i < listOfEdges.size(); ++i){
+        listOfEdgesDiff.push_back({diff[listOfEdges[i].first], diff[listOfEdges[i].second]});
+    }
+
+    return listOfEdgesDiff;
+}
+
+map<vector<string>, int> numerateDiff(const vector<pair<vector<string>, vector<string>>>& firstListOfEdges, const vector<pair<vector<string>, vector<string>>>& secondListOfEdges){
+    map<vector<string>, int> res;
+    int cnt = -1;
+
+    for (int i = 0; i < firstListOfEdges.size(); ++i){
+        if (res.find(firstListOfEdges[i].first) == res.end()){
+            res[firstListOfEdges[i].first] = ++cnt;
+        }
+        if (res.find(firstListOfEdges[i].second) == res.end()){
+            res[firstListOfEdges[i].second] = ++cnt;
+        }
+    }
+
+    for (int i = 0; i < secondListOfEdges.size(); ++i){
+        if (res.find(secondListOfEdges[i].first) == res.end()){
+            res[secondListOfEdges[i].first] = ++cnt;
+        }
+        if (res.find(secondListOfEdges[i].second) == res.end()){
+            res[secondListOfEdges[i].second] = ++cnt;
+        }
+    }
+
+    return res;
+}
+
+vector<pair<int, int>> madeListOfEdgesFromListOfEdgesDiff(const vector<pair<vector<string>, vector<string>>>& listOfEdgesDiff, map<vector<string>, int>& numberOfDiff){
+    vector<pair<int, int>> res;
+    for (int i = 0; i < listOfEdgesDiff.size(); ++i){
+        res.push_back({numberOfDiff[listOfEdgesDiff[i].first], numberOfDiff[listOfEdgesDiff[i].second]});
+    }
+    return res;
+}
+
+pair<graph, graph> generateGraphsFromGitLinks(const string& link1, const string& link2){
+    vector<pair<vector<string>, vector<string>>> listOfEdgesDiff1 = createlistOfEdgesDiffFromLinkOnRep("C:\\Users\\ochob\\OneDrive\\Рабочий стол\\6 семестр\\mercurial\\lab6\\laba\\mylab6");
+    vector<pair<vector<string>, vector<string>>> listOfEdgesDiff2 = createlistOfEdgesDiffFromLinkOnRep("C:\\Users\\ochob\\OneDrive\\Рабочий стол\\6 семестр\\mercurial\\lab6\\laba\\mylab6");
+
+    map<vector<string>, int> numberOfDiff = numerateDiff(listOfEdgesDiff1, listOfEdgesDiff2);
+
+    //dbg(numberOfDiff);
+
+    vector<pair<int, int>> listOfEdges1 = madeListOfEdgesFromListOfEdgesDiff(listOfEdgesDiff1, numberOfDiff);
+    vector<pair<int, int>> listOfEdges2 = madeListOfEdgesFromListOfEdgesDiff(listOfEdgesDiff2, numberOfDiff);
+
+    dbg(listOfEdges1);
+    //dbg
+    graph graph1(listOfEdges1);
+    graph graph2(listOfEdges2);
+
+    return {graph1, graph2};
+}
+
+int main()
+{
+    pair<graph, graph> graphs = generateGraphsFromGitLinks("C:\\Users\\ochob\\OneDrive\\Рабочий стол\\6 семестр\\mercurial\\lab6\\laba\\mylab6", "C:\\Users\\ochob\\OneDrive\\Рабочий стол\\6 семестр\\mercurial\\lab6\\laba\\mylab6");
+
+    dbg(graphs.first);
+    dbg(graphs.second);
+
+    unordered_set<int> resGraph = graph::bruteForceGreatestCommonSubgraph(graphs.first, graphs.second);
+    dbg(resGraph);
     return 0;
 }
 
