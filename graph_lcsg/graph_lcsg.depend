@@ -1,4 +1,25 @@
 # depslib dependency file v1.0
-1584205420 source:c:\users\ochob\onedrive\Рабочий стол\graph_lcsg\graph_lcsg\graph_lcsg\main.cpp
-	<iostream>
+1683076621 source:c:\users\ochob\onedrive\Рабочий стол\graph_lcsg\graph_lcsg\graph_lcsg\main.cpp
+	<bits/stdc++.h>
+	"dbg.h"
+	"graph.h"
+
+1683075804 source:c:\users\ochob\onedrive\Рабочий стол\graph_lcsg\graph_lcsg\graph_lcsg\outputcontainers.cpp
+	<bits/stdc++.h>
+	"outputContainers.h"
+
+1683073776 c:\users\ochob\onedrive\Рабочий стол\graph_lcsg\graph_lcsg\graph_lcsg\dbg.h
+
+1683074177 c:\users\ochob\onedrive\Рабочий стол\graph_lcsg\graph_lcsg\graph_lcsg\outputcontainers.h
+
+1683076344 source:c:\users\ochob\onedrive\Рабочий стол\graph_lcsg\graph_lcsg\graph_lcsg\graph.cpp
+	<bits/stdc++.h>
+	"graph.h"
+
+1683076617 c:\users\ochob\onedrive\Рабочий стол\graph_lcsg\graph_lcsg\graph_lcsg\graph.h
+	<bits/stdc++.h>
+
+1683076344 c:\users\ochob\onedrive\Рабочий стол\graph_lcsg\graph_lcsg\graph_lcsg\graph.cpp
+	<bits/stdc++.h>
+	"graph.h"
 
